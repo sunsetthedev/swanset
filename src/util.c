@@ -25,14 +25,13 @@ int createFILE(const char *bdir, char *fname, const char *data) {
   char fullpath[256];
   snprintf(fullpath, sizeof(fullpath), "%s/%s", bdir, fname);
 
-  printf("[CREATE] : ..Creating FILE.. {%s}\n", fullpath);
+ // printf("[CREATE] : ..Creating FILE.. {%s}\n", fullpath);
   FILE *file = fopen(fullpath, "w");
   if (file == NULL) {
     fprintf(stderr, "Failed to create FILE {%s}\n", fullpath);
     return 1;
   }
   fprintf(file, "%s", data);
-  puts("Finished");
 
   fclose(file);
 

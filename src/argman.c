@@ -7,7 +7,8 @@
 // Get form the program argument and store it and send into [MANAGER]
 Command *getCmd(int ac, char **ag) {
   Command *cmd = malloc(sizeof(Command));
-  if (!cmd) return NULL;
+  if (!cmd)
+    return NULL;
 
   /* default values */
   cmd->atype = NONE;
@@ -43,30 +44,32 @@ Command *getCmd(int ac, char **ag) {
     }
     return cmd;
   }
-  if(ac == 2 || ac >= 3) {
-    if (checkstr(cmdtext, "run"))
-    {
+  if (ac == 2 || ac >= 3) {
+    if (checkstr(cmdtext, "run")) {
       /* run may accept further args; store the first arg */
       cmd->cdata = strdup(ag[2]);
       strcat(cmd->cdata, " ");
-      for(int i = 3;i < ac;i++)
-      {
-          strcat(cmd->cdata, ag[i]);
-          if (!(i == ac - 1)) {
-            strcat(cmd->cdata, " ");
-          }
+      for (int i = 3; i < ac; i++) {
+        strcat(cmd->cdata, ag[i]);
+        if (!(i == ac - 1)) {
+          strcat(cmd->cdata, " ");
+        }
       }
       cmd->atype = RUN;
     }
   }
 
   /* commands that require at least one argument (ac >= 3) */
-  if (ac == 3)
-  {
+  if (ac == 3) {
     if (checkstr(cmdtext, "create")) {
       /* second argument is at ag[2] */
       cmd->cdata = strdup(ag[2]);
       cmd->atype = CREATE;
+    }
+    else if (checkstr(cmdtext, "add")) {
+      /* second argument is at ag[2] */
+      cmd->cdata = strdup(ag[2]);
+      cmd->atype = ADD;
     }
   }
   // Extra Argument needed Commands
@@ -110,6 +113,9 @@ void displayType(ARGTYPE at) {
     break;
   case CREATE:
     puts("CREATE");
+    break;
+  case ADD:
+    puts("ADD");
     break;
   default:
     printf("UNKNOWN ARGTYPE (%d)\n", at);

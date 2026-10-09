@@ -15,6 +15,7 @@
 typedef enum {
   INIT,
   VERSION,
+  ADD,
   BUILD,
   RUN,
   CREATE,
@@ -24,7 +25,6 @@ typedef enum {
   DELETE,
   HELP,
   NONE
-
 } ARGTYPE;
 
 typedef struct {

@@ -6,6 +6,7 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -19,7 +20,7 @@ char *getCFiles(const char *dirpath) {
   }
 
   char *c_files = malloc(1024);
-  c_files[0] = '\0'; 
+  c_files[0] = '\0';
 
   while ((entry = readdir(dir)) != NULL) {
     // Skip hidden navigation directories
@@ -46,16 +47,17 @@ void writeConfFile(const char *projname) {
   }
   FILE *file = fopen("project.conf", "w");
 
-  fprintf(file, 
-    "[project]\n"
-    "name=\"%s\"\n"
-    "version=\"0.1.0\"\n"
-    "author=\"%s\"\n\n"
-    "[build]\n"
-    "compiler=\"gcc\"\n"
-    "cflags=\"-Wall -std=c99\"\n"
-    "cdir = \"src/*.c\"\n"
-    "output = \"build/%s\"\n",projname,username,projname);
+  fprintf(file,
+          "[project]\n"
+          "name=\"%s\"\n"
+          "version=\"0.1.0\"\n"
+          "author=\"%s\"\n\n"
+          "[build]\n"
+          "compiler=\"gcc\"\n"
+          "cflags=\"-Wall -std=c99\"\n"
+          "cdir = \"src/*.c\"\n"
+          "output = \"build/%s\"\n",
+          projname, username, projname);
 
   fclose(file);
 }
@@ -65,21 +67,21 @@ void buildProject(Template *temp) {
     fprintf(stderr, "Template is NULL\n");
     exit(1);
   }
-  if(temp->dirName == NULL) {
+  if (temp->dirName == NULL) {
     fprintf(stderr, "Template dirName is NULL\n");
     exit(1);
   }
   if (!isEmptyDIR(".")) {
-    errormessage("Current directory is not empty. Please run in an empty directory.");
+    errormessage(
+        "Current directory is not empty. Please run in an empty directory.");
     exit(1);
   }
   infoMessage("Creating Project...");
   const char *projname = toLowerCase(getcurrentDIRName());
   puts(getcurrentDIRName());
   writeConfFile(projname);
-  copy_folder(temp->dirName, "."); 
+  copy_folder(temp->dirName, ".");
   successMessage("Project Created Successfully");
-
 }
 
 // Name functions are the working functions. These are like creating project,
@@ -92,15 +94,23 @@ void buildProject(Template *temp) {
 void DisplayLOGO() {
   /* Use explicit ANSI escape codes to avoid relying on external macros */
   printf("\x1b[36m");
-  printf("\n\n  /$$$$$$                                                          /$$    \n");
-  printf(" /$$__  $$                                                        | $$    \n");
-  printf("| $$  \\__/ /$$  /$$  /$$  /$$$$$$  /$$$$$$$   /$$$$$$$  /$$$$$$  /$$$$$$  \n");
-  printf("|  $$$$$$ | $$ | $$ | $$ |____  $$| $$__  $$ /$$_____/ /$$__  $$|_  $$_/ \n");
-  printf(" \\____  $$| $$ | $$ | $$  /$$$$$$$| $$  \\ $$|  $$$$$$ | $$$$$$$$  | $$   \n");
-  printf(" /$$  \\ $$| $$ | $$ | $$ /$$__  $$| $$  | $$ \\____  $$| $$_____/  | $$ /$$\n");
-  printf("|  $$$$$$/|  $$$$$/$$$$/|  $$$$$$$| $$  | $$ /$$$$$$$/|  $$$$$$$  |  $$$$/\n");
-  printf(" \\______/  \\_____/\\___/  \\_______/|__/  |__/|_______/  \\_______/   \\___/  \n\n\n");
-  printf("\x1b[0m"); 
+  printf("\n\n  /$$$$$$                                                        "
+         "  /$$    \n");
+  printf(" /$$__  $$                                                        | "
+         "$$    \n");
+  printf("| $$  \\__/ /$$  /$$  /$$  /$$$$$$  /$$$$$$$   /$$$$$$$  /$$$$$$  "
+         "/$$$$$$  \n");
+  printf("|  $$$$$$ | $$ | $$ | $$ |____  $$| $$__  $$ /$$_____/ /$$__  $$|_  "
+         "$$_/ \n");
+  printf(" \\____  $$| $$ | $$ | $$  /$$$$$$$| $$  \\ $$|  $$$$$$ | $$$$$$$$  "
+         "| $$   \n");
+  printf(" /$$  \\ $$| $$ | $$ | $$ /$$__  $$| $$  | $$ \\____  $$| $$_____/  "
+         "| $$ /$$\n");
+  printf("|  $$$$$$/|  $$$$$/$$$$/|  $$$$$$$| $$  | $$ /$$$$$$$/|  $$$$$$$  |  "
+         "$$$$/\n");
+  printf(" \\______/  \\_____/\\___/  \\_______/|__/  |__/|_______/  "
+         "\\_______/   \\___/  \n\n\n");
+  printf("\x1b[0m");
   printf("Swanset (v:0.1.0)\n");
   printf("A simple project manager for C\n");
   printf("Usage: swanset [command] [options]\n");
@@ -115,8 +125,6 @@ void DisplayLOGO() {
   printf("  complete    Mark a project as complete\n");
   printf("  delete      Delete a project\n");
 }
-
-
 
 // [CORE] : INIT Function for init the project in current location
 void Init() {
@@ -133,12 +141,9 @@ void Init() {
   freeallTemplates();
 }
 
-void Version() { 
-  infoMessage("Sunset (v0.1.0)");
-}
+void Version() { infoMessage("Sunset (v0.1.0)"); }
 
-
-// Build Function for building binary of Project Done in 17/8/2026 
+// Build Function for building binary of Project Done in 17/8/2026
 void Build() {
   if (!isFILEExist(".", "project.conf")) {
     errormessage("There is no project.conf file in this directory.");
@@ -183,7 +188,6 @@ void Build() {
   }
 }
 
-
 // Run function to run binary file from build function for the project
 void Run() {
 
@@ -196,19 +200,49 @@ void Run() {
     exit(1);
   }
   const char *binfile = get_config("build.output");
-    actionMessage("Running the project...\n");
+  actionMessage("Running the project...\n");
 
-    if(!system(binfile)) {
-      printf("\n");
-      successMessage("Run successfully.");
-    } else {
-      errormessage("Running is stop by ERROR");
-      exit(1);
-    }
+  if (!system(binfile)) {
+    printf("\n");
+    successMessage("Run successfully.");
+  } else {
+    errormessage("Running is stop by ERROR");
+    exit(1);
+  }
+}
+
+void Add(const char *name) {
+  if (!isFILEExist(".", "project.conf")) {
+    errormessage("There is no project.conf file in this directory.");
+    exit(1);
+  }
+  if (!isDIRExist(".", "src")) {
+    errormessage("There is no include folder!!!");
+    exit(1); // Later add to create folder by asking user(me) if he(me) want
+  }
+  if (!isDIRExist(".", "include")) {
+    errormessage("There is no include folder!!!");
+    exit(1); // Later add to create folder by asking user(me) if he(me) want
+  }
+  char cfile[1024];
+  snprintf(cfile, 1024, "%s.c",name);
+  char hfile[1024];
+  snprintf(hfile, 1024, "%s.h",name);
+  debugMessage(cfile);
+  debugMessage(hfile);
+
+  char *hdata = "#include ../include/";
+  char *cdata = "#include \"../include/\"";
+
+  createFILE("src", cfile, cdata);
+  createFILE("include", hfile, hdata);
+
+  infoMessage("files are added");
+  
 }
 
 // Exec functions
-void execute(Command *cmd,int ac, char *ag[]) {
+void execute(Command *cmd, int ac, char *ag[]) {
   displayType(cmd->atype);
   debugMessage(cmd->cdata);
   if (cmd == NULL) {
@@ -230,6 +264,9 @@ void execute(Command *cmd,int ac, char *ag[]) {
     break;
   case NONE: // Done
     DisplayLOGO();
+    break;
+  case ADD:
+    Add(cmd->cdata);
     break;
   default:
     errormessage("Unknown command. Please check the usage.");

@@ -212,33 +212,48 @@ void Run() {
 }
 
 void Add(const char *name) {
+
+  // Check is this a project directory
   if (!isFILEExist(".", "project.conf")) {
     errormessage("There is no project.conf file in this directory.");
     exit(1);
   }
+  // Check again to have the src folder
   if (!isDIRExist(".", "src")) {
     errormessage("There is no include folder!!!");
     exit(1); // Later add to create folder by asking user(me) if he(me) want
   }
+  // Check again to have the include folder
   if (!isDIRExist(".", "include")) {
     errormessage("There is no include folder!!!");
     exit(1); // Later add to create folder by asking user(me) if he(me) want
   }
+  char headername[1024];
+  snprintf(headername, 1024, "%s_H", toUpperCase(name));
+  debugMessage(headername);
+
+  // Do the jobs done functions
   char cfile[1024];
-  snprintf(cfile, 1024, "%s.c",name);
+  snprintf(cfile, 1024, "%s.c", name);
   char hfile[1024];
-  snprintf(hfile, 1024, "%s.h",name);
+  snprintf(hfile, 1024, "%s.h", name);
   debugMessage(cfile);
   debugMessage(hfile);
 
-  char *hdata = "#include ../include/";
-  char *cdata = "#include \"../include/\"";
+  char hdata[1024];
+  snprintf(hdata, 1024, "#ifndef %s\n#define %s\n\n#endif // !%s", headername,
+           headername, headername);
+  debugMessage(hdata);
+  char cdata[1024] = "#include \"../include/";
+  strcat(cdata, hfile);
+  strcat(cdata, "\"\n\n");
+  debugMessage(cdata);
 
+  actionMessage("Creating files....");
   createFILE("src", cfile, cdata);
   createFILE("include", hfile, hdata);
-
   infoMessage("files are added");
-  
+  successMessage("Successfully");
 }
 
 // Exec functions

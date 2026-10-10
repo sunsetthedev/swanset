@@ -10,6 +10,9 @@ typedef struct {
   const char *tempName;
 } Template;
 
+
+
+
 void initTemplates();
 Template *getTemplate(const char *tempName);
 void freeallTemplates();

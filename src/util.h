@@ -4,8 +4,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #define BUFFER_SIZE 4096
-#define BASEDIR "$HOME/Swanset/"
-#define TEMPLATEDIR "/home/swanhtet/Swanset/templates/"
 // TODO: Make functionable Log System Later : 2026-07-23 20:20
 typedef struct {
   int line;
@@ -18,6 +16,7 @@ typedef struct {
 bool checkstr(const char *c1, const char *c2);
 char *getcurrentDIRName();
 char *toLowerCase(const char *text);
+char *toUpperCase(const char *text);
 
 // LOG SYSTEM
 Log *initLog(FILE *fpath);

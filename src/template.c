@@ -11,11 +11,10 @@ Template **templates;
 void initTemplates() {
   // */ Variables
   const char *homedir = getenv("HOME");
-  char basedir[256];
   char tempdir[256];
+
   int i = 0;
-  snprintf(basedir, 256, "%s/Swanset", homedir);
-  snprintf(tempdir, 256, "%s/templates", basedir);
+  snprintf(tempdir, 256, "%s/.local/share/Swanset/templates", homedir);
 
   struct dirent *entrydir;
   DIR *dir = opendir(tempdir);

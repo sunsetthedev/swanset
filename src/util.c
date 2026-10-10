@@ -176,6 +176,20 @@ char *toLowerCase(const char *text) {
   }
   return str;
 }
+char *toUpperCase(const char *text) {
+  char *str = malloc(strlen(text) + 1);
+  if (str == NULL) {
+    fprintf(stderr, "Failed to allocate memory for toUpperCase\n");
+    return NULL;
+  }
+  strcpy(str, text);
+  for (int i = 0; str[i]; i++) {
+    if (str[i] >= 'a' && str[i] <= 'z') {
+      str[i] = str[i] - 32;
+    }
+  }
+  return str;
+}
 
 char *getcurrentDIRName() {
   char cwd[PATH_MAX];
@@ -206,6 +220,7 @@ char *getcurrentDIRName() {
   return result;
 }
 
+// Terminal Color print Functions
 TerminalColor get_terminal_color(const char *color_name) {
   for (size_t i = 0; i < sizeof(terminal_colors) / sizeof(TerminalColor); ++i) {
     if (strcmp(terminal_colors[i].color_name, color_name) == 0) {

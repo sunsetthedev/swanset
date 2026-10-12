@@ -24,12 +24,15 @@ typedef enum {
   COMPLETE,
   DELETE,
   HELP,
+  TEMPLATE,
   NONE
 } ARGTYPE;
 
 typedef struct {
   ARGTYPE atype;
   char *cdata;
+  char **extraArray;
+  int extraArgCount;
 } Command;
 
 Command *getCmd(int ac, char **ag);

@@ -30,6 +30,7 @@ char *getLatestLog(Log *l);
 // DIR Manipulation
 int createFILE(const char *bdir, char *fname, const char *data);
 int createDIR(const char *dname);
+int createDIRB(const char *basedir,const char *dname);
 char *getTemplateDIR();
 char *getBaseDIR();
 bool isDIRExist(const char *basedir, const char *dirname);

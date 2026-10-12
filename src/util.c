@@ -1,5 +1,6 @@
 #include "util.h"
 #include <dirent.h>
+#include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +22,19 @@ int createDIR(const char *dname) {
   }
   return 0;
 }
+int createDIRB(const char *basedir,const char *dname) {
+  char fullpath[256];
+  snprintf(fullpath, sizeof(fullpath), "%s/%s", basedir, dname);
+  printf("[CREATE] : ..Creating Directory.. {%s}\n", fullpath);
+  if (mkdir(fullpath, 0777) == 0) {
+    puts("Finished");
+  } else {
+    fprintf(stderr, "Failed to create %s\n", fullpath);
+    return 1;
+  }
+  return 0;
+}
+
 int createFILE(const char *bdir, char *fname, const char *data) {
   char fullpath[256];
   snprintf(fullpath, sizeof(fullpath), "%s/%s", bdir, fname);
@@ -126,19 +140,21 @@ void copy_folder(const char *src_dir, const char *dst_dir) {
 // Checking file is exist in base directory
 bool isFILEExist(const char *basedir, const char *filename)
 {
-  struct dirent *entrydata;
-  DIR *dir = opendir(basedir);
-  if (!dir) {
-    fprintf(stderr, "Can't check the basedir in isFILEExist");
-    exit(1);
+  char fullpath[4096];
+  int path_length;
+  if (filename[0] == '/') {
+    path_length = snprintf(fullpath, sizeof(fullpath), "%s", filename);
+  } else {
+    path_length =
+        snprintf(fullpath, sizeof(fullpath), "%s/%s", basedir, filename);
   }
-  while ((entrydata = readdir(dir)) != NULL) {
-    if (checkstr(filename, entrydata->d_name)) {
-      return true;
-    }
+  if (path_length < 0 || (size_t)path_length >= sizeof(fullpath)) {
+    fprintf(stderr, "Path is too long to check for a file\n");
+    return false;
   }
 
-  return false;
+  struct stat file_info;
+  return stat(fullpath, &file_info) == 0 && S_ISREG(file_info.st_mode);
 }
 
 // Checking if dirpath directory is empty or not

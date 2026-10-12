@@ -120,7 +120,7 @@ void DisplayLOGO() {
   printf("  build       Build the project\n");
   printf("  run         Run the project\n");
   printf("  create      Create a new project from a template\n");
-  printf("  list        List all projects\n");
+  printf("  template    Template Management\n");
   printf("  show        Show details of a project\n");
   printf("  complete    Mark a project as complete\n");
   printf("  delete      Delete a project\n");
@@ -189,7 +189,7 @@ void Build() {
 }
 
 // Run function to run binary file from build function for the project
-void Run() {
+void Run(Command *cmd) {
 
   if (!isFILEExist(".", "project.conf")) {
     errormessage("There is no project.conf file in this directory.");
@@ -201,8 +201,14 @@ void Run() {
   }
   const char *binfile = get_config("build.output");
   actionMessage("Running the project...\n");
+  char *finalexecute;
+  if (cmd->cdata == NULL) {
+    finalexecute = strdup(binfile);
+  } else {
+    snprintf(finalexecute, 1024, "%s %s", binfile, cmd->cdata);
+  }
 
-  if (!system(binfile)) {
+  if (!system(finalexecute)) {
     printf("\n");
     successMessage("Run successfully.");
   } else {
@@ -230,15 +236,12 @@ void Add(const char *name) {
   }
   char headername[1024];
   snprintf(headername, 1024, "%s_H", toUpperCase(name));
-  debugMessage(headername);
 
   // Do the jobs done functions
   char cfile[1024];
   snprintf(cfile, 1024, "%s.c", name);
   char hfile[1024];
   snprintf(hfile, 1024, "%s.h", name);
-  debugMessage(cfile);
-  debugMessage(hfile);
 
   char hdata[1024];
   snprintf(hdata, 1024, "#ifndef %s\n#define %s\n\n#endif // !%s", headername,
@@ -256,14 +259,42 @@ void Add(const char *name) {
   successMessage("Successfully");
 }
 
+void TemplateFun(Command *cmd) {
+  if (cmd->extraArgCount < 2) {
+    errormessage("Usage: swanset template add <config-file>");
+    return;
+  }
+
+  debugMessage(cmd->extraArray[0]);
+  debugMessage(cmd->extraArray[1]);
+  if (checkstr(cmd->extraArray[0], "add")) {
+
+    actionMessage("Building the Template from the file");
+    if (!isFILEExist(".",cmd->extraArray[1])) {
+      errormessage("FIle for template is not found");
+      exit(EXIT_FAILURE);
+    
+    }
+    buildTemplate(cmd->extraArray[1]);
+  } else {
+    errormessage("Unknown template command");
+  }
+}
+
 // Exec functions
 void execute(Command *cmd, int ac, char *ag[]) {
-  displayType(cmd->atype);
-  debugMessage(cmd->cdata);
   if (cmd == NULL) {
     infoMessage("Command is NULL\n");
     exit(1);
   }
+
+  displayType(cmd->atype);
+  debugMessage(cmd->cdata);
+  debugMessage("For extraCommand");
+  for(int i = 0; i < cmd->extraArgCount; i++) {
+    debugMessage(cmd->extraArray[i]);
+  }
+
   switch (cmd->atype) {
   case INIT: // Done
     Init();
@@ -275,13 +306,16 @@ void execute(Command *cmd, int ac, char *ag[]) {
     Build();
     break;
   case RUN: // Do in 18/8/2026 need to done in 20 UPDATE : Kinda done in 26
-    Run();
+    Run(cmd);
     break;
   case NONE: // Done
     DisplayLOGO();
     break;
   case ADD:
     Add(cmd->cdata);
+    break;
+  case TEMPLATE:
+    TemplateFun(cmd);
     break;
   default:
     errormessage("Unknown command. Please check the usage.");

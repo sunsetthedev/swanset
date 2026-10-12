@@ -290,7 +290,7 @@ int main() {
     memset(&config, 0, sizeof(TemplateConfig));
 
     // Parse the file
-    parse_config("template.conf", &config);
+    parse_config("hello-world.tempconf", &config);
     
     // Validate folders and interpolate variables
     validate_and_process(&config);

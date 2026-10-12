@@ -1,5 +1,5 @@
 // This is a global configuration for my C project template
-name = "MyAwesomeProject"
+name = "Hello-World"
 tempauthor = "John Doe"
 version = "1.0.4"
 

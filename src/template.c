@@ -286,28 +286,55 @@ void validate_and_process(TemplateConfig *cfg) {
 
 void buildTemplate(const char *filename) {
   TemplateConfig tempconf = {0};
-  debugMessage("Parse Started");
   parse_template(filename, &tempconf);
-  debugMessage("Got it");
+  const char *homedir = getenv("HOME");
+  char tempdir[256];
+
+  int i = 0;
+  snprintf(tempdir, 256, "%s/.local/share/Swanset/templates", homedir);
 
   const char *tempname = get_var(&tempconf, "name");
   if (!tempname || tempname[0] == '\0') {
     errormessage("Template configuration must define a non-empty name");
     exit(EXIT_FAILURE);
   }
-
-  printf("🌐 Global Variables:\n");
-
   for (int i = 0; i < tempconf.var_count; i++) {
     printf("   %s = \"%s\"\n", tempconf.vars[i].key, tempconf.vars[i].value);
   }
 
   actionMessage("Creating Template....");
-  if (createDIR(tempname) != 0) {
+  if (createDIRB(tempdir, tempname) != 0) {
     for (int i = 0; i < tempconf.file_count; i++)
       free(tempconf.files[i].data);
     exit(EXIT_FAILURE);
   }
+
+  char tempnewdir[1024];
+  snprintf(tempnewdir, 1024, "%s/%s", tempdir, tempname);
+  
+  actionMessage("Creating sub folders...");
+  for (int i = 0; i < tempconf.folder_count; i++) {
+    debugMessage(tempconf.folders[i]);
+    createDIRB(tempnewdir, tempconf.folders[i]);
+  }
+  actionMessage("Creating files...");
+  for (int i = 0; i < tempconf.file_count; i++) {
+    FileConfig *file = &tempconf.files[i];
+    char filepath[200];
+    if (!isDIRExist(tempnewdir, file->under)) {
+      errormessage("Folder not found");
+      exit(EXIT_FAILURE);
+    }
+    snprintf(filepath, 200, "%s/%s",tempnewdir,file->under);
+    debugMessage(filepath);
+    if (createFILE(filepath, file->name,file->data) != 0) {
+      errormessage("Fail to create Files");
+      exit(EXIT_FAILURE);
+    }
+    //free(file);
+  }
+
+
   successMessage("Successfully ");
 
   for (int i = 0; i < tempconf.file_count; i++)

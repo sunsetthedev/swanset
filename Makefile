@@ -7,7 +7,7 @@ HDRS = $(wildcard src/*.h)
 BDIR = build/swanset
 TDIR = test/*.c
 TBDIR = test/test
-.PHONY: all build clean test-argman
+.PHONY: all build clean
 
 all: build
 
@@ -18,12 +18,6 @@ build: $(SRCS) $(HDRS)
 test: $(TDIR)
 	$(CC) $(TDIR) $(CFLAGS) -o $(TBDIR)
 	$(TBDIR)
-
-test-argman:
-	@mkdir -p build
-	$(CC) -Isrc tests/argman_test.c src/argman.c $(CFLAGS) -o build/test-argman
-	./build/test-argman
-
 clean:
 	rm -f $(BDIR)
 	rm -f build/test-argman
